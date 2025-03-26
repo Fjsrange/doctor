@@ -1,4 +1,11 @@
 {
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    // "types": ["element-plus/global"]
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
