@@ -1,7 +1,16 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import Header from "@/components/hospital_top/index.vue";
 import Footer from "@/components/hospital_bottom/index.vue";
+import request from "@/utils/requests.ts";
+
+onMounted(() => {
+  // let res = await request.get("/hosp/hospital/1/10");
+  // console.log("res", res);
+  request.get("/hosp/hospital/1/10").then((res) => {
+    console.log("res", res);
+  });
+});
 </script>
 
 <template>
