@@ -5,19 +5,55 @@ import Search from "./search/index.vue";
 import Level from "./level/index.vue";
 import Region from "./region/index.vue";
 import Card from "./card/index.vue";
+import { getHospitalList } from "@/apis/home/index.ts";
+import { ElLoading } from "element-plus";
+
+import { Content, HospitalResponseData } from "@/apis/home/type.ts";
 
 const currentPage = ref<number>(1);
 const pageSize = ref<number>(10);
+const hospitalArr = ref<Content>([]); // 医院列表数据
+const total = ref<number>(0); // 总数据量
 
 // 每个页面展示的数量
 const handleSizeChange = (val: number) => {
-  console.log(`${val} items per page`);
+  currentPage.value = 1; // 重置当前页码为1
+  getHospitalInfo();
 };
 // 选择页码
 const handleCurrentChange = (val: number) => {
-  console.log(`current page: ${val}`);
-  currentPage.value = val;
+  getHospitalInfo();
 };
+
+const getHospitalInfo = async () => {
+  const loading = ElLoading.service({
+    lock: true,
+    text: "Loading",
+    background: "rgba(0, 0, 0, 0.7)",
+  });
+  let res: HospitalResponseData = await getHospitalList(
+    currentPage.value,
+    pageSize.value
+  );
+  console.log("res", res);
+  const {
+    code,
+    data: { content, size, totalElements, totalPages },
+  } = res;
+  if (code === 200) {
+    // console.log("data", data);
+    hospitalArr.value = content; // 医院列表数据
+    total.value = totalElements; // 总数据量
+    pageSize.value = size; // 每页数据量
+  } else {
+    console.error("获取医院数据失败", res);
+  }
+  loading.close();
+};
+
+onMounted(() => {
+  getHospitalInfo();
+});
 </script>
 
 <template>
@@ -37,7 +73,12 @@ const handleCurrentChange = (val: number) => {
           <Region></Region>
           <!-- 医院卡片 -->
           <div class="card-box">
-            <Card class="card" v-for="i in 10" :key="i"></Card>
+            <Card
+              class="card"
+              v-for="item in hospitalArr"
+              :key="item.id"
+              :hospitalInfo="item"
+            ></Card>
             <!-- 分页器 -->
             <el-pagination
               v-model:current-page="currentPage"
@@ -45,7 +86,7 @@ const handleCurrentChange = (val: number) => {
               :page-sizes="[10, 20, 30, 50, 100]"
               :background="true"
               layout="total, sizes, prev, pager, next, jumper"
-              :total="100"
+              :total="total"
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
             />

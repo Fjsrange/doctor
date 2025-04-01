@@ -1,11 +1,20 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+
+defineProps({
+  hospitalInfo: {
+    type: Object,
+    default: () => ({}),
+  },
+});
+</script>
 
 <template>
   <div class="">
     <el-card style="width: 480px" shadow="hover">
       <div class="content">
         <div class="left">
-          <div class="hospital_name">北京医院</div>
+          <div class="hospital_name">{{ hospitalInfo.hosname }}</div>
           <div class="tip">
             <div class="level">
               <svg
@@ -34,7 +43,7 @@
                   p-id="4598"
                 ></path>
               </svg>
-              <span>三级甲等</span>
+              <span>{{ hospitalInfo.param.hostypeString }}</span>
             </div>
             <div class="time">
               <svg
@@ -64,12 +73,15 @@
                   p-id="5829"
                 ></path>
               </svg>
-              <span>2025.01.01</span>
+              <span>{{ hospitalInfo.bookingRule?.releaseTime }} 放号</span>
             </div>
           </div>
         </div>
         <div class="right">
-          <img src="@/assets/vue.svg" alt="" />
+          <img
+            :src="'data:image/jpeg;base64,' + hospitalInfo.logoData"
+            alt=""
+          />
         </div>
       </div>
     </el-card>
